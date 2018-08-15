@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>执念。 - 不想将开发作为挣钱的工具，而是作为快乐的起源</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,Sidekiq基本框架
+Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  sidekiq_options :retry ,"> 
+    <meta name="author" content="cherry"> 
+    <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-8691406134231910",
+        enable_page_level_ads: true
+      });
+    </script>
+
+</head>
+
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Elasticsearch-检索文档</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Elasticsearch-检索文档</h1>
+        <div class="stuff">
+            <span>七月 27, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p># </p>
+<h3 id="查询字符串搜索"><a href="#查询字符串搜索" class="headerlink" title="查询字符串搜索"></a>查询字符串搜索</h3><ul>
+<li>请求搜索所有商品（响应内容的hits数组中包含了我们所有商品信息）</li>
+</ul>
+<pre><code>http://localhost:9200/products/product/_search?pretty=true
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;took&quot; : 2,</span><br><span class="line">  &quot;timed_out&quot; : false,</span><br><span class="line">  &quot;_shards&quot; : &#123;</span><br><span class="line">    &quot;total&quot; : 5,</span><br><span class="line">    &quot;successful&quot; : 5,</span><br><span class="line">    &quot;skipped&quot; : 0,</span><br><span class="line">    &quot;failed&quot; : 0</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;hits&quot; : &#123;</span><br><span class="line">    &quot;total&quot; : 2061,</span><br><span class="line">    &quot;max_score&quot; : 1.0,</span><br><span class="line">    &quot;hits&quot; : [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;_index&quot; : &quot;products&quot;,</span><br><span class="line">        &quot;_type&quot; : &quot;product&quot;,</span><br><span class="line">        &quot;_id&quot; : &quot;22&quot;,</span><br><span class="line">        &quot;_score&quot; : 1.0,</span><br><span class="line">        &quot;_source&quot; : &#123;</span><br><span class="line">          &quot;id&quot; : 22,</span><br><span class="line">          &quot;sku&quot; : &quot;BB76AG61371&quot;,</span><br><span class="line">          &quot;name&quot; : &quot;2017S.S 蓝色六格手提包&quot;,</span><br><span class="line">          &quot;brand&quot; : &#123;</span><br><span class="line">            &quot;id&quot; : 58,</span><br><span class="line">            &quot;name&quot; : &quot;ISSEY MIYAKE&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,  </span><br><span class="line">      &#123;</span><br><span class="line">        &quot;_index&quot; : &quot;products&quot;,</span><br><span class="line">        &quot;_type&quot; : &quot;product&quot;,</span><br><span class="line">        &quot;_id&quot; : &quot;24&quot;,</span><br><span class="line">        &quot;_score&quot; : 1.0,</span><br><span class="line">        &quot;_source&quot; : &#123;</span><br><span class="line">          &quot;id&quot; : 24,</span><br><span class="line">          &quot;sku&quot; : &quot;MJT021E00535100&quot;,</span><br><span class="line">          &quot;name&quot; : &quot;2017S.S 白色刺绣拉链手臂条纹卫衣&quot;,</span><br><span class="line">          &quot;brand&quot; : &#123;</span><br><span class="line">            &quot;id&quot; : 42,</span><br><span class="line">            &quot;name&quot; : &quot;THOM BROWNE&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]  </span><br><span class="line">  &#125;     </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>搜索白色商品信息，<strong>查询字符串搜索</strong>，因为我们像传递URL参数一样去传递查询语句）<br>在请求中使用_search关键字，然后将查询语句传递给参数q=</p>
+<pre><code>http://localhost:9200/products/product/_search?pretty=true&amp;q=name:白色
+</code></pre></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;took&quot; : 12,</span><br><span class="line">  &quot;timed_out&quot; : false,</span><br><span class="line">  &quot;_shards&quot; : &#123;</span><br><span class="line">    &quot;total&quot; : 5,</span><br><span class="line">    &quot;successful&quot; : 5,</span><br><span class="line">    &quot;skipped&quot; : 0,</span><br><span class="line">    &quot;failed&quot; : 0</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;hits&quot; : &#123;</span><br><span class="line">    &quot;total&quot; : 1626,</span><br><span class="line">    &quot;max_score&quot; : 2.9474099,</span><br><span class="line">    &quot;hits&quot; : [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;_index&quot; : &quot;products&quot;,</span><br><span class="line">        &quot;_type&quot; : &quot;product&quot;,</span><br><span class="line">        &quot;_id&quot; : &quot;1768&quot;,</span><br><span class="line">        &quot;_score&quot; : 2.9474099,</span><br><span class="line">        &quot;_source&quot; : &#123;</span><br><span class="line">          &quot;id&quot; : 24,</span><br><span class="line">          &quot;sku&quot; : &quot;MJT021E00535100&quot;,</span><br><span class="line">          &quot;name&quot; : &quot;2017S.S 白色刺绣拉链手臂条纹卫衣&quot;,</span><br><span class="line">          &quot;brand&quot; : &#123;</span><br><span class="line">            &quot;id&quot; : 42,</span><br><span class="line">            &quot;name&quot; : &quot;THOM BROWNE&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]  </span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="DSL-搜索"><a href="#DSL-搜索" class="headerlink" title="DSL 搜索"></a>DSL 搜索</h3><p> 查询字符串搜索便于通过命令行完成特定的搜索</p>
+<p> Elasticsearch提供丰富且灵活的查询语言叫做DSL查询(Query DSL),它允许你构建更加复杂、强大的查询</p>
+<p> <strong>DSL</strong>(Domain Specific Language特定领域语言)以JSON请求体的形式出现。</p>
+<h4 id="match"><a href="#match" class="headerlink" title="match"></a>match</h4><ul>
+<li><p>黑色商品</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">GET http://localhost:9200/products/product/_search</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">		&quot;query&quot;:&#123;</span><br><span class="line">				&quot;match&quot;:&#123;</span><br><span class="line">					&quot;name&quot;: “黑色鞋”</span><br><span class="line">				&#125;</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>黑色拖鞋商品<br>目前我们可以在字段中搜索单独的一个词，这挺好的，但是有时候你想要确切的匹配若干个单词或者短语(phrases)。<br>例如：我们想搜一下黑色拖鞋，黑色和拖鞋必须相邻。<br>这时就要使用match_parse</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;:&#123;</span><br><span class="line">        &quot;match_parse&quot;:&#123;</span><br><span class="line">            &quot;name&quot;: &quot;黑色拖鞋&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="filter-gt-lt"><a href="#filter-gt-lt" class="headerlink" title="filter gt lt"></a>filter gt lt</h4><ul>
+<li>品牌排名前5的黑色商品</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;:&#123;</span><br><span class="line">        &quot;match&quot;:&#123;</span><br><span class="line">            &quot;name&quot;: &quot;黑色&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;filtered&quot;:&#123;</span><br><span class="line">        &quot;filter&quot;:&#123;</span><br><span class="line">            &quot;range&quot;:&#123;</span><br><span class="line">                &quot;brand_id&quot;:&#123;</span><br><span class="line">                  &quot;gt&quot;: 1,</span><br><span class="line">                  &quot;lt&quot;: 5</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>搜索结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;took&quot;: 6,</span><br><span class="line">  &quot;timed_out&quot;: false,</span><br><span class="line">  &quot;_shards&quot;: &#123;</span><br><span class="line">    &quot;total&quot;: 5,</span><br><span class="line">    &quot;successful&quot;: 5,</span><br><span class="line">    &quot;skipped&quot;: 0,</span><br><span class="line">    &quot;failed&quot;: 0</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;hits&quot;: &#123;</span><br><span class="line">    &quot;total&quot;: 1668,</span><br><span class="line">    &quot;max_score&quot;: 2.339244,</span><br><span class="line">    &quot;hits&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;_index&quot;: &quot;products&quot;,</span><br><span class="line">        &quot;_type&quot;: &quot;product&quot;,</span><br><span class="line">        &quot;_id&quot;: &quot;786&quot;,</span><br><span class="line">        &lt;code&gt;&quot;_score&quot;: 2.339244,&lt;/code&gt;</span><br><span class="line">        &quot;_source&quot;: &#123;</span><br><span class="line">          &quot;id&quot;: 786,</span><br><span class="line">          &quot;sku&quot;: &quot;1EGD44-9000&quot;,</span><br><span class="line">          &quot;name&quot;: &quot;2017S.S YSL黑色拖鞋&quot;,</span><br><span class="line">          &quot;brand&quot;: &#123;</span><br><span class="line">            &quot;id&quot;: 3,</span><br><span class="line">            &quot;name&quot;: &quot;ACNE STUDIOS&quot;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;_index&quot;: &quot;products&quot;,</span><br><span class="line">        &quot;_type&quot;: &quot;product&quot;,</span><br><span class="line">        &quot;_id&quot;: &quot;1788&quot;,</span><br><span class="line">        &lt;code&gt;&quot;_score&quot;: 2.162963,&lt;/code&gt;</span><br><span class="line">        &quot;_source&quot;: &#123;</span><br><span class="line">          &quot;id&quot;: 1788,</span><br><span class="line">          &quot;sku&quot;: &quot;2HK173BLK&quot;,</span><br><span class="line">          &quot;name&quot;: &quot;2017S.S 黑色细带拖鞋&quot;,</span><br><span class="line">          &quot;brand&quot;: &#123;</span><br><span class="line">            &quot;id&quot;: 3,</span><br><span class="line">            &quot;name&quot;: &quot;ACNE STUDIOS&quot;</span><br><span class="line">          &#125;,</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 这个例子很好的解释了Elasticsearch如何在各种文本字段中进行全文搜索，并且返回相关性最大的结果集。</p>
+<p> <strong>相关性</strong>(relevance)的概念在Elasticsearch中非常重要，而这个概念在传统关系型数据库中是不可想象的，</p>
+<p> <strong>因为传统数据库对记录的查询只有匹配或者不匹配</strong></p>
+<h3 id="高亮所包含查询值"><a href="#高亮所包含查询值" class="headerlink" title="高亮所包含查询值"></a>高亮所包含查询值</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;:&#123;</span><br><span class="line">        &quot;match&quot;:&#123;</span><br><span class="line">          &quot;name&quot;: &quot;白色&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;，</span><br><span class="line">    &quot;highlight&quot;: &#123;</span><br><span class="line">      &quot;fields&quot; : &#123;</span><br><span class="line">          &quot;name&quot; : &#123;&#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>搜索结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">&quot;took&quot; : 12,</span><br><span class="line">&quot;timed_out&quot; : false,</span><br><span class="line">&quot;_shards&quot; : &#123;</span><br><span class="line">  &quot;total&quot; : 5,</span><br><span class="line">  &quot;successful&quot; : 5,</span><br><span class="line">  &quot;skipped&quot; : 0,</span><br><span class="line">  &quot;failed&quot; : 0</span><br><span class="line">&#125;,</span><br><span class="line">&quot;hits&quot; : &#123;</span><br><span class="line">  &quot;total&quot; : 1626,</span><br><span class="line">  &quot;max_score&quot; : 2.9474099,</span><br><span class="line">  &quot;hits&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;_index&quot; : &quot;products&quot;,</span><br><span class="line">      &quot;_type&quot; : &quot;product&quot;,</span><br><span class="line">      &quot;_id&quot; : &quot;1768&quot;,</span><br><span class="line">      &quot;_score&quot; : 2.9474099,</span><br><span class="line">      &quot;_source&quot; : &#123;</span><br><span class="line">        &quot;id&quot; : 24,</span><br><span class="line">        &quot;sku&quot; : &quot;MJT021E00535100&quot;,</span><br><span class="line">        &quot;name&quot; : &quot;2017S.S &lt;em&gt;白色&lt;/em&gt;刺绣拉链手臂条纹卫衣&quot;,</span><br><span class="line">        &quot;brand&quot; : &#123;</span><br><span class="line">          &quot;id&quot; : 42,</span><br><span class="line">          &quot;name&quot; : &quot;THOM BROWNE&quot;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                    
+                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

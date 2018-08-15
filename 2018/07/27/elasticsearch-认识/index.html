@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>执念。 - 不想将开发作为挣钱的工具，而是作为快乐的起源</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,Sidekiq基本框架
+Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  sidekiq_options :retry ,"> 
+    <meta name="author" content="cherry"> 
+    <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-8691406134231910",
+        enable_page_level_ads: true
+      });
+    </script>
+
+</head>
+
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Elasticsearch(一)</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Elasticsearch(一)</h1>
+        <div class="stuff">
+            <span>七月 27, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h1 id="Elasticsearch"><a href="#Elasticsearch" class="headerlink" title="Elasticsearch"></a>Elasticsearch</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>是一个分布式、可扩展、实时的搜索与数据分析引擎,Elasticsearch 不仅仅只是全文搜索，我们还将介绍结构化搜索、数据分析、复杂的语言处理、地理位置和对象间关联关系等</p>
+</blockquote>
+<h2 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h2><h3 id="安装-elasticsearch"><a href="#安装-elasticsearch" class="headerlink" title="安装 elasticsearch"></a>安装 elasticsearch</h3><pre><code>brew install elasticsearch 
+brew info elasticsearch # 查看安装位置等信息
+</code></pre><h3 id="运行-elasticsearch"><a href="#运行-elasticsearch" class="headerlink" title="运行 elasticsearch"></a>运行 elasticsearch</h3><pre><code>brew service start elasticsearch
+</code></pre><h3 id="测试是否成功"><a href="#测试是否成功" class="headerlink" title="测试是否成功"></a>测试是否成功</h3><pre><code>http://localhost:9200
+</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;name&quot; : &quot;sKyCPA6&quot;,</span><br><span class="line">  &quot;cluster_name&quot; : &quot;elasticsearch_2ccmay&quot;,</span><br><span class="line">  &quot;cluster_uuid&quot; : &quot;B81Q4NMQTLKFlJUnhnakLg&quot;,</span><br><span class="line">  &quot;version&quot; : &#123;</span><br><span class="line">    &quot;number&quot; : &quot;6.2.4&quot;,</span><br><span class="line">    &quot;build_hash&quot; : &quot;ccec39f&quot;,</span><br><span class="line">    &quot;build_date&quot; : &quot;2018-04-12T20:37:28.497551Z&quot;,</span><br><span class="line">    &quot;build_snapshot&quot; : false,</span><br><span class="line">    &quot;lucene_version&quot; : &quot;7.2.1&quot;,</span><br><span class="line">    &quot;minimum_wire_compatibility_version&quot; : &quot;5.6.0&quot;,</span><br><span class="line">    &quot;minimum_index_compatibility_version&quot; : &quot;5.0.0&quot;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;tagline&quot; : &quot;You Know, for Search&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这就意味着你现在已经启动并运行一个 Elasticsearch 节点了，你可以用它做实验了。<br> 单个 节点 可以作为一个运行中的 Elasticsearch 的实例。 而一个集群是一组拥有相同cluster.name 的节点， 他们能一起工作并共享数据(一个单独的节点也可以组成一个集群)<br> 你可以在 elasticsearch.yml 配置文件中 修改 cluster.name ，该文件会在节点启动时加载 <code>(<strong>这个重启服务后才会生效</strong>)</code></p>
+<h3 id="RESTful-API-with-JSON-over-HTTP"><a href="#RESTful-API-with-JSON-over-HTTP" class="headerlink" title="RESTful API with JSON over HTTP"></a>RESTful API with JSON over HTTP</h3><p>可以使用 RESTful API 通过端口 9200 和 Elasticsearch 进行通信，你可以用你最喜爱的 web 客户端访问 Elasticsearch 。也可以使用 curl 命令来和 Elasticsearch 交互。</p>
+<p>一个 Elasticsearch 请求和任何 HTTP 请求一样由若干相同的部件组成：</p>
+<pre><code>curl -X&lt;VERB&gt; &apos;&lt;PROTOCOL&gt;://&lt;HOST&gt;:&lt;PORT&gt;/&lt;PATH&gt;?&lt;QUERY_STRING&gt;&apos; -d &apos;&lt;BODY&gt;&apos;
+</code></pre><ul>
+<li>VERB HTTP方法：GET, POST, PUT, HEAD, DELETE</li>
+<li>PROTOCOL http或者https协议（只有在Elasticsearch前面有https代理的时候可用）</li>
+<li>HOST Elasticsearch集群中的任何一个节点的主机名，如果是在本地的节点，那么就叫localhost</li>
+<li>PORT Elasticsearch HTTP服务所在的端口，默认为9200</li>
+<li>PATH API路径（例如_count将返回集群中文档的数量），PATH可以包含多个组件，例如_cluster/stats或者_nodes/stats/jvm</li>
+<li>QUERY_STRING 一些可选的查询请求参数，例如?pretty参数将使请求返回更加美观易读的JSON数据</li>
+<li>BODY 一个JSON格式的请求主体</li>
+</ul>
+<p>例如，计算集群中文档的数量，我们可以用这个:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">curl -XGET &apos;http://localhost:9200/_count?pretty&apos; -d &apos;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;: &#123;</span><br><span class="line">        &quot;match_all&quot;: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">&apos;</span><br></pre></td></tr></table></figure></p>
+<h2 id="ElasticSearch-6-x-head插件安装"><a href="#ElasticSearch-6-x-head插件安装" class="headerlink" title="ElasticSearch 6.x head插件安装"></a>ElasticSearch 6.x head插件安装</h2><p>elasticsearch-head-chrome</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                    
+                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

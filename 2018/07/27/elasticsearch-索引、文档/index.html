@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>执念。 - 不想将开发作为挣钱的工具，而是作为快乐的起源</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,Sidekiq基本框架
+Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  sidekiq_options :retry ,"> 
+    <meta name="author" content="cherry"> 
+    <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-8691406134231910",
+        enable_page_level_ads: true
+      });
+    </script>
+
+</head>
+
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Elasticsearch-文档 & 索引</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Elasticsearch-文档 & 索引</h1>
+        <div class="stuff">
+            <span>七月 27, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>在elasticsearch中，文档归属于类型，类型存储在索引中。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>elasticsearch</th>
+<th>数据库</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>field</td>
+<td>字段</td>
+<td>列</td>
+</tr>
+<tr>
+<td>document</td>
+<td>文档</td>
+<td>行</td>
+</tr>
+<tr>
+<td>type</td>
+<td>类型</td>
+<td>表</td>
+</tr>
+<tr>
+<td>index</td>
+<td>索引</td>
+<td>数据库</td>
+</tr>
+</tbody>
+</table>
+<p>elasticseatch 集群中（customer_name相同的一群节点）可以包含多个索引，每个索引包含多个类型，每个类型包含多个文档，每个文档包含多个字段。</p>
+<h2 id="文档"><a href="#文档" class="headerlink" title="文档"></a>文档</h2><h3 id="面向文档"><a href="#面向文档" class="headerlink" title="面向文档"></a>面向文档</h3><blockquote>
+<p>Elasticsearch是<strong>面向文档(document oriented)</strong>的，这意味着它可以存储整个对象或<strong>文档(document)</strong>。然而它不仅仅是存储，还会索引(index)每个文档的内容使之可以被搜索。在Elasticsearch中，你可以对文档（而非成行成列的数据）进行索引、搜索、排序、过滤。这种理解数据的方式与以往完全不同，这也是Elasticsearch能够执行复杂的全文搜索的原因之一.</p>
+</blockquote>
+<h3 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h3><p>ELasticsearch使用Javascript对象符号(JavaScript Object Notation)，也就是JSON，作为文档序列化格式。</p>
+<p>以下使用JSON文档来表示一个用户对象：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;email&quot;:      &quot;john@smith.com&quot;,</span><br><span class="line">    &quot;first_name&quot;: &quot;John&quot;,</span><br><span class="line">    &quot;last_name&quot;:  &quot;Smith&quot;,</span><br><span class="line">    &quot;info&quot;: &#123;</span><br><span class="line">        &quot;bio&quot;:         &quot;Eco-warrior and defender of the weak&quot;,</span><br><span class="line">        &quot;age&quot;:         25,</span><br><span class="line">        &quot;interests&quot;: [ &quot;dolphins&quot;, &quot;whales&quot; ]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;join_date&quot;: &quot;2014/05/01&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>NOTE:具体请查看“serialization” or “marshalling”处理JSON的模块。</p>
+</blockquote>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><blockquote>
+<p>「索引」含义的区分<br>你可能已经注意到索引(index)这个词在Elasticsearch中有着不同的含义，所以有必要在此做一下区分:<br>索引（名词） 如上文所述，一个索引(index)就像是传统关系数据库中的数据库，它是相关文档存储的地方，index的复数是indices 或indexes。<br>索引（动词） 「索引一个文档」表示把一个文档存储到索引（名词）里，以便它可以被检索或者查询。这很像SQL中的INSERT关键字，差别是，如果文档已经存在，新的文档将覆盖旧的文档。<br>倒排索引 传统数据库为特定列增加一个索引，例如B-Tree索引来加速检索。Elasticsearch和Lucene使用一种叫做- <a href="https://wizardforcel.gitbooks.io/the-art-of-programming-by-july/content/a.4.html" target="_blank" rel="noopener">倒排索引</a> -(inverted index)的数据结构来达到相同目的。</p>
+</blockquote>
+<p>例如：创建一个商品目录步骤：<br><br></p>
+<ul>
+<li>为每个员工的文档(document)建立索引，每个文档包含了相应商品的所有信息</li>
+<li>每个文档的类型为product</li>
+<li>product类型归属于索引products</li>
+<li>products索引存储在Elasticsearch集群中</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;_index&quot; : &quot;products&quot;, # 索引名</span><br><span class="line">  &quot;_type&quot; : &quot;product&quot;,   # 类型名</span><br><span class="line">  &quot;_id&quot; : &quot;1&quot;,					 # 商品id</span><br><span class="line">  &quot;_version&quot; : 1,</span><br><span class="line">  &quot;found&quot; : true,</span><br><span class="line">  &quot;_source&quot; : &#123;</span><br><span class="line">    &quot;id&quot; : 1,</span><br><span class="line">    &quot;sku&quot; : &quot;428056BRM071000&quot;,</span><br><span class="line">    &quot;name&quot; : &quot;2017S.S 黑色压纹单肩斜挎包&quot;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                    
+                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

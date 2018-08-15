@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>执念。 - 不想将开发作为挣钱的工具，而是作为快乐的起源</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,Sidekiq基本框架
+Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  sidekiq_options :retry ,"> 
+    <meta name="author" content="cherry"> 
+    <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-8691406134231910",
+        enable_page_level_ads: true
+      });
+    </script>
+
+</head>
+
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Sidekiq For Rails 5.2.1 (二)</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Sidekiq For Rails 5.2.1 (二)</h1>
+        <div class="stuff">
+            <span>八月 13, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <blockquote>
+<p>此篇 主要是redis的配置信息</p>
+</blockquote>
+<h2 id="Using-Redis"><a href="#Using-Redis" class="headerlink" title="Using Redis"></a>Using Redis</h2><p>Sidekiq 使用 Redis 存储其所有Job和操作数据。默认情况下, Sidekiq 尝试连接到 localhost:6379 上的 Redis。这通常在开发过程中很有用, 但需要在生产中进行调整。</p>
+<ul>
+<li>Using an ENV variable<br>  可以使用环境变量设置Redis URL。这使得在Heroku上配置Sidekiq变得简单<br>  在.vimrc 或者.zshrc 文件中添加<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export DEPLOY_PRODUCTION_AWS_REDIS_URL="redis://localhost:6379/"</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Using-an-initializer"><a href="#Using-an-initializer" class="headerlink" title="Using an initializer"></a>Using an initializer</h2><p>请务必注意，要配置Redis的位置，必须同时定义<code>Sidekiq.configure_server</code>和<code>Sidekiq.configure_client</code>块。config/initializers/redis.rb（我们的项目中这样配置的）</p>
+<p>NOTE: The configuration hash must have symbolized keys.    </p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">"redis"</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">"redis-namespace"</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">"redis/objects"</span></span><br><span class="line"></span><br><span class="line">redis_config = Rails.application.config_for(<span class="symbol">:redis</span>)</span><br><span class="line"></span><br><span class="line">$redis = Redis.new(<span class="symbol">host:</span> redis_config[<span class="string">"host"</span>], <span class="symbol">port:</span> redis_config[<span class="string">"port"</span>])</span><br><span class="line">$redis.select(<span class="number">0</span>)</span><br><span class="line">Redis::Objects.redis = $redis</span><br><span class="line"></span><br><span class="line">sidekiq_url = <span class="string">"redis://<span class="subst">#&#123;redis_config[<span class="string">'host'</span>]&#125;</span>:<span class="subst">#&#123;redis_config[<span class="string">'port'</span>]&#125;</span>/0"</span></span><br><span class="line">Sidekiq.configure_server <span class="keyword">do</span> <span class="params">|config|</span></span><br><span class="line">  config.redis = &#123; <span class="symbol">namespace:</span> <span class="string">"sidekiq"</span>, <span class="symbol">url:</span> sidekiq_url &#125;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">Sidekiq.configure_client <span class="keyword">do</span> <span class="params">|config|</span></span><br><span class="line">  config.redis = &#123; <span class="symbol">namespace:</span> <span class="string">"sidekiq"</span>, <span class="symbol">url:</span> sidekiq_url &#125;</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>config/redis.yml.default</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">defaults:</span> &amp;defaults</span><br><span class="line">  <span class="symbol">host:</span> <span class="number">127.0</span>.<span class="number">0</span>.<span class="number">1</span></span><br><span class="line">  <span class="symbol">port:</span> <span class="number">6379</span></span><br><span class="line"></span><br><span class="line"><span class="symbol">development:</span></span><br><span class="line">  &lt;&lt;: *defaults</span><br><span class="line"></span><br><span class="line"><span class="symbol">test:</span></span><br><span class="line">  &lt;&lt;: *defaults</span><br><span class="line"></span><br><span class="line"><span class="symbol">production:</span></span><br><span class="line">  &lt;&lt;: *defaults</span><br></pre></td></tr></table></figure>
+<p>如果在创建Redis连接时需要完全控制，例如如果您使用的是redis-failover或Redis Sentinel，则可以为Sidekiq提供预构建的连接池：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">redis_conn = proc &#123;</span><br><span class="line">  Redis.new <span class="comment"># do anything you want here</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Sidekiq.configure_client <span class="keyword">do</span> <span class="params">|config|</span></span><br><span class="line">  config.redis = ConnectionPool.new(<span class="symbol">size:</span> <span class="number">5</span>, &amp;redis_conn)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">Sidekiq.configure_server <span class="keyword">do</span> <span class="params">|config|</span></span><br><span class="line">  config.redis = ConnectionPool.new(<span class="symbol">size:</span> <span class="number">25</span>, &amp;redis_conn)</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h2 id="Redis’s-config"><a href="#Redis’s-config" class="headerlink" title="Redis’s config"></a>Redis’s config</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli</span><br></pre></td></tr></table></figure>
+<h2 id="Memory"><a href="#Memory" class="headerlink" title="Memory"></a>Memory</h2><blockquote>
+<p>Redis runs best when all data fits in memory. You should set maxmemory-policy noeviction in redis.conf so Redis doesn’t drop Sidekiq’s data silently.</p>
+</blockquote>
+<p>关于maxmemory的设置，redis.config说明如下：</p>
+<ul>
+<li><p>如果设定了maxmemory，使用redis的时候，redis的内存使用量不能超过设定的值，一旦redis的内存使用量达到了最大值，redis将会尝试按照选择的eviction policy(回收策略)移除相应的keys</p>
+</li>
+<li><p>如果redis不能根据回收策略移除keys,或者回收策略设置成noeviction，那么redis将对需要写操作的命令返回错误信息，如SET,LPUSH操作，对GET这样的只读操作会继续响应。</p>
+</li>
+<li><p>如果一个设置了maxmemory的实例连接了从redis，那么预留给redis使用的内存除了redis实例本身占用的内存外还要加上用于主从复制的输出缓冲区大小(the output buffers need to feed the slaves），这样，才不会触发移除keys的死循环，因为当内存达到最大内存限制后，会根据eviction policy移除相应的keys，这时，从redis也会同步移除keys操作，最终所有数据都被清空。</p>
+</li>
+</ul>
+<p>总之，一句话，对一个连接了从redis的redis实例设置maxmemory时，建议设置一个较高的值，使系统有多余的内存用于主从同步，当然，如果eviction policy设置成noevcition,则不需要这么设置。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> volatile-lru -&gt; remove the key with an expire <span class="built_in">set</span> using an LRU algorithm</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> allkeys-lru -&gt; remove any key according to the LRU algorithm</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> volatile-random -&gt; remove a random key with an expire <span class="built_in">set</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> allkeys-random -&gt; remove a random key, any key</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> volatile-ttl -&gt; remove the key with the nearest expire time (minor TTL)</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> noeviction -&gt; don<span class="string">'t expire at all, just return an error on write operations</span></span></span><br></pre></td></tr></table></figure></p>
+<h2 id="Multiple-Redis-instances"><a href="#Multiple-Redis-instances" class="headerlink" title="Multiple Redis instances"></a>Multiple Redis instances</h2><p>许多人使用Redis作为缓存,但重要的是Sidekiq针对未配置为缓存但作为持久存储的Redis实例运行。如果希望使用Redis进行缓存 和 Sidekiq，建议使用两个单独的Redis命名空间<br>我们项目中的配置如下：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">redis:</span></span><br><span class="line">   <span class="symbol">uri:</span> <span class="string">'redis://localhost:6379/'</span></span><br><span class="line">   <span class="symbol">namespace:</span> <span class="string">'default-ios'</span> </span><br><span class="line">   <span class="comment">#different server have different namespace</span></span><br></pre></td></tr></table></figure></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                    
+                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

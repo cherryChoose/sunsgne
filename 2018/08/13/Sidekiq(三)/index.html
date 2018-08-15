@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>执念。 - 不想将开发作为挣钱的工具，而是作为快乐的起源</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,Sidekiq基本框架
+Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  sidekiq_options :retry ,"> 
+    <meta name="author" content="cherry"> 
+    <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-8691406134231910",
+        enable_page_level_ads: true
+      });
+    </script>
+
+</head>
+
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Sidekiq For Rails 5.2.1 (三)</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Sidekiq For Rails 5.2.1 (三)</h1>
+        <div class="stuff">
+            <span>八月 13, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h2 id="Sidekiq基本框架"><a href="#Sidekiq基本框架" class="headerlink" title="Sidekiq基本框架"></a>Sidekiq基本框架</h2><p><img src="/img/sidekiq_example.png" alt="Sidekiq基本框架"></p>
+<h2 id="Sidekiq-Client"><a href="#Sidekiq-Client" class="headerlink" title="Sidekiq Client"></a>Sidekiq Client</h2><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HardWorker</span></span></span><br><span class="line">  <span class="keyword">include</span> Sidekiq::Worker</span><br><span class="line">  sidekiq_options <span class="symbol">:retry</span> =&gt; <span class="number">5</span>, <span class="symbol">queue:</span> <span class="string">'hard'</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">perform</span><span class="params">(name)</span></span></span><br><span class="line">    <span class="comment"># do something</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>我们通常使用下面的方式，注册一个任务，让它异步执行。<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HardWorker.perform_async(<span class="string">'bob'</span>)  <span class="comment"># 异步执行任务</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="异步任务到底如何注册的？"><a href="#异步任务到底如何注册的？" class="headerlink" title="异步任务到底如何注册的？"></a>异步任务到底如何注册的？</h3><p>很容易看出perform_async这个类方法定义在 Sidekiq::Worker 里面，在源码中找到相关的<a href="https://github.com/mperham/sidekiq/blob/master/lib/sidekiq/worker.rb#L49" target="_blank" rel="noopener">代码</a></p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">perform_async</span><span class="params">(*args)</span></span></span><br><span class="line">  client_push(<span class="string">'class'</span> =&gt; <span class="keyword">self</span>, <span class="string">'args'</span> =&gt; args)</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">client_push</span><span class="params">(item)</span></span> <span class="comment"># :nodoc:</span></span><br><span class="line">  pool = Thread.current[<span class="symbol">:sidekiq_via_pool</span>] <span class="params">||</span> get_sidekiq_options[<span class="string">'pool'</span>] <span class="params">||</span> Sidekiq.redis_pool</span><br><span class="line">  <span class="comment"># 有省略</span></span><br><span class="line">  Sidekiq::Client.new(pool).push(item)</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>可以看出，把当前Class和方法的参数生成了一个hash，传递进了client_push方法， pool是一个redis连接， 调用了Client的实例方法</p>
+<p>调用Sidekiq::Client.new.push <a href="https://github.com/mperham/sidekiq/blob/master/lib/sidekiq/client.rb#L191" target="_blank" rel="noopener">代码</a></p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Returns a unique Job ID.  If middleware  stops the job, nil will be returned instead.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Example:</span></span><br><span class="line"><span class="comment">#   push('queue' =&gt; 'my_queue', 'class' =&gt; MyWorker, 'args' =&gt; ['foo', 1, :bat =&gt; 'bar'])</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(item)</span></span></span><br><span class="line">  normed = normalize_item(item)</span><br><span class="line">  payload = process_single(item[<span class="string">'class'</span>], normed)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> payload</span><br><span class="line">    raw_push([payload])</span><br><span class="line">    payload[<span class="string">'jid'</span>]</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>源码一步一步走下来，重要方法<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">atomic_push</span><span class="params">(conn, payloads)</span></span></span><br><span class="line">  <span class="comment"># 延时任务，例如指定了一分钟之后才执行</span></span><br><span class="line">  <span class="keyword">if</span> payloads.first[<span class="string">'at'</span>]</span><br><span class="line">    conn.zadd(<span class="string">'schedule'</span>, payloads.map <span class="keyword">do</span> <span class="params">|hash|</span></span><br><span class="line">      at = hash.delete(<span class="string">'at'</span>).to_s</span><br><span class="line">      [at, Sidekiq.dump_json(hash)]</span><br><span class="line">    <span class="keyword">end</span>)</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    q = payloads.first[<span class="string">'queue'</span>]</span><br><span class="line">    now = Time.now.to_f</span><br><span class="line">    to_push = payloads.map <span class="keyword">do</span> <span class="params">|entry|</span></span><br><span class="line">      entry[<span class="string">'enqueued_at'</span>] = now</span><br><span class="line">      Sidekiq.dump_json(entry)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    conn.sadd(<span class="string">'queues'</span>, q)</span><br><span class="line">    conn.lpush(<span class="string">"queue:<span class="subst">#&#123;q&#125;</span>"</span>, to_push) <span class="comment"># 重点</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p>
+<p>payloads是通过上面item参数加工后得到的，里面除了之前的class，args参数之外，还会有sidekiq_options方法定制的部分参数，例如图中的数据queue。 </p>
+<p>从代码可以清晰的看出，异步执行相关的数据被打包成json，然后使用redis的lpush命令塞进了一个队列中，这个队列的名字和指定的queue有关系，按照我们上面的配置，这个队列的就是 “queue:hard”。</p>
+<p>最终会在Redis中存储下面这些信息</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>retry</td>
+<td>重试次数</td>
+</tr>
+<tr>
+<td>queue</td>
+<td>队列名称</td>
+</tr>
+<tr>
+<td>backtrace</td>
+<td>错误栈</td>
+</tr>
+<tr>
+<td>class</td>
+<td>处理类名称</td>
+</tr>
+<tr>
+<td>args</td>
+<td>参数</td>
+</tr>
+<tr>
+<td>jid</td>
+<td>job_id</td>
+</tr>
+<tr>
+<td>enqueued_at</td>
+<td>进入队列的时间</td>
+</tr>
+</tbody>
+</table>
+<p>通过这些参数，就可以知道需要被执行的是哪个Worker，并且参数是什么。 注册异步任务到此就结束了。</p>
+<h2 id="Sidekiq-Server"><a href="#Sidekiq-Server" class="headerlink" title="Sidekiq Server"></a>Sidekiq Server</h2><h3 id="上面这些队列里的数据是怎么被消费的？"><a href="#上面这些队列里的数据是怎么被消费的？" class="headerlink" title="上面这些队列里的数据是怎么被消费的？"></a>上面这些队列里的数据是怎么被消费的？</h3><blockquote>
+<p>所谓注册异步任务，将要执行的Class和参数写入redis队列，然后由Worker来处理这些异步任务,实际进行异步任务处理的就是我们熟悉的Sidekiq进程<a href="http://ruby-china.com/topics/36825" target="_blank" rel="noopener">源码分析sidekiq</a></p>
+</blockquote>
+<h3 id="Sidekiq-Service-Thead"><a href="#Sidekiq-Service-Thead" class="headerlink" title="Sidekiq Service Thead"></a>Sidekiq Service Thead</h3><p><img src="/img/sidekiq_new_framework.png" alt="Sidekiq Service Thead"></p>
+<ol>
+<li>Manager</li>
+</ol>
+<p>Manager 根据用户设置的并发数, 生成处理队列任务的 Processor, 并对idle或者dead的 Processsor 进行管理, 包括:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. start: Spin up Processors.</span><br><span class="line">2. processor_died: Handle job failure, throw away Processor, create new one.</span><br><span class="line">3. quiet: shutdown idle Processors.</span><br><span class="line">4. stop: hard stop the Processors by deadline.</span><br></pre></td></tr></table></figure>
+<p>初始化manager<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Manager</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">initialize</span><span class="params">(options=&#123;&#125;)</span></span></span><br><span class="line">    logger.debug &#123; options.inspect &#125;</span><br><span class="line">    @options = options</span><br><span class="line">    @count = options[<span class="symbol">:concurrency</span>] <span class="params">||</span> <span class="number">25</span></span><br><span class="line">    raise ArgumentError, <span class="string">"Concurrency of <span class="subst">#&#123;@count&#125;</span> is not supported"</span> <span class="keyword">if</span> @count &lt; <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># <span class="doctag">@done</span>代表是否结束处理任务</span></span><br><span class="line">    @done = <span class="literal">false</span></span><br><span class="line">    @workers = Set.new</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 生成多个Processor, 每一个Processor对象在被调用start方法的时候, 会生成了一个线程</span></span><br><span class="line">    @count.times <span class="keyword">do</span></span><br><span class="line">      @workers &lt;&lt; Processor.new(<span class="keyword">self</span>)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 添加一个锁, 用于修改 <span class="doctag">@workers</span> 的数据, 管理Processor对象</span></span><br><span class="line">    @plock = Mutex.new</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p>
+<p>启动Manager, 即调用Processor#start<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Manager</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">start</span></span></span><br><span class="line">    @workers.each <span class="keyword">do</span> <span class="params">|x|</span></span><br><span class="line">      x.start</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure></p>
+<ol start="2">
+<li>Processor<br>Processor 是处理任务的类, 包括下面的功能</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. 使用brpop从Redis获取Job</span><br><span class="line">2. 执行Job</span><br><span class="line">	a. 实例化Worker</span><br><span class="line">	b. run the middleware </span><br><span class="line">	c. call #perform</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Processor#start, 启动Processor, 创建一个线程</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Processor</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">start</span></span></span><br><span class="line">    <span class="comment"># 生成一个线程, 并调用run方法</span></span><br><span class="line">    @thread <span class="params">||</span>= safe_thread(<span class="string">"processor"</span>, &amp;method(<span class="symbol">:run</span>))</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>Processor#run, 处理任务, 去Redis获取队列数据</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># <span class="doctag">@mgr</span> 即为他对应的 Manager 对象</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Processor</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">run</span></span></span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">      <span class="keyword">while</span> !@done</span><br><span class="line">        <span class="comment"># 调用 perform 方法进行处理</span></span><br><span class="line">        process_one</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">      <span class="comment"># 一旦结束了, 则将 Processor对象中的manager对应的worker去掉, 即是改变了上述 Manager的 <span class="doctag">@workers</span> 数组</span></span><br><span class="line">      @mgr.processor_stopped(<span class="keyword">self</span>)</span><br><span class="line">    <span class="keyword">rescue</span> Sidekiq::Shutdown</span><br><span class="line">      <span class="comment"># 在接收到TERM SIGNAL之后, 等待超时的时候sidekiq会抛出异常 Sidekiq::Shutdown, 见下文分析</span></span><br><span class="line">      <span class="comment"># 线程被关闭.</span></span><br><span class="line">      @mgr.processor_stopped(<span class="keyword">self</span>)</span><br><span class="line">    <span class="keyword">rescue</span> Exception =&gt; ex</span><br><span class="line">      <span class="comment"># 程序报错了, Manager#processor_died 会重新生成一个新的Processor线程</span></span><br><span class="line">      @mgr.processor_died(<span class="keyword">self</span>, ex)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>###队列重启时job的处理</p>
+<ol>
+<li><p>停止Fetch jobs</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Manager</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">quiet</span></span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> @done</span><br><span class="line">    <span class="comment"># 将 <span class="doctag">@done</span> 设置为 true</span></span><br><span class="line">    @done = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">    logger.info &#123; <span class="string">"Terminating quiet workers"</span> &#125;</span><br><span class="line">    @workers.each &#123; <span class="params">|x|</span> x.terminate &#125; <span class="comment"># 这里的每一个 x 都是一个Processor对象</span></span><br><span class="line">    fire_event(<span class="symbol">:quiet</span>, <span class="symbol">reverse:</span> <span class="literal">true</span>)</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Processsor</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">terminate</span><span class="params">(wait=<span class="literal">false</span>)</span></span></span><br><span class="line">    @done = <span class="literal">true</span> <span class="comment"># 将每一个Processor 的 <span class="doctag">@done</span> 设置为 true, 下面的run方法则不再fetch新的job</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> !@thread</span><br><span class="line">    @thread.value <span class="keyword">if</span> wait</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">run</span></span></span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">      <span class="keyword">while</span> !@done</span><br><span class="line">        process_one</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">      <span class="comment"># 一旦结束了, 则将 Processor对象中的manager对应的worker去掉, 即是改变了上述 Manager的 <span class="doctag">@workers</span> 数组</span></span><br><span class="line">      @mgr.processor_stopped(<span class="keyword">self</span>)</span><br><span class="line">    <span class="keyword">rescue</span> Sidekiq::Shutdown</span><br><span class="line">      @mgr.processor_stopped(<span class="keyword">self</span>)</span><br><span class="line">    <span class="keyword">rescue</span> Exception =&gt; ex</span><br><span class="line">      @mgr.processor_died(<span class="keyword">self</span>, ex)</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>等待Sidekiq.options[:timeout]秒(默认为8秒)的时间, 使得Processor去处理完当前未完成的jobs</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Manager</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">stop</span><span class="params">(deadline)</span></span></span><br><span class="line">    quiet</span><br><span class="line">    fire_event(<span class="symbol">:shutdown</span>, <span class="symbol">reverse:</span> <span class="literal">true</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># some of the shutdown events can be async,</span></span><br><span class="line">    <span class="comment"># we don't have any way to know when they're done but</span></span><br><span class="line">    <span class="comment"># give them a little time to take effect</span></span><br><span class="line">    sleep PAUSE_TIME</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> @workers.empty?</span><br><span class="line"></span><br><span class="line">    logger.info &#123; <span class="string">"Pausing to allow workers to finish..."</span> &#125;</span><br><span class="line">    remaining = deadline - Time.now</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 等待默认的8s后, 如果 <span class="doctag">@workers</span> 为空, 则代表在规定时间内任务都处理完, 退出</span></span><br><span class="line">    <span class="keyword">while</span> remaining &gt; PAUSE_TIME</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">if</span> @workers.empty?</span><br><span class="line">      sleep PAUSE_TIME</span><br><span class="line">      remaining = deadline - Time.now</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> @workers.empty?</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 等待默认的8s后, 如果 <span class="doctag">@workers</span> 不为空, 则进行强制shutdown</span></span><br><span class="line">    hard_shutdown</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果在等待时间之后, 仍存在正在处理的job, 则将job通过rpush命令推入Redis, 强制使 processor 退出</p>
+</li>
+</ol>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Manager</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">hard_shutdown</span></span></span><br><span class="line">    <span class="comment"># We've reached the timeout and we still have busy workers.</span></span><br><span class="line">    <span class="comment"># They must die but their jobs shall live on.</span></span><br><span class="line">    cleanup = <span class="literal">nil</span></span><br><span class="line">    @plock.synchronize <span class="keyword">do</span></span><br><span class="line">      cleanup = @workers.dup</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> cleanup.size &gt; <span class="number">0</span></span><br><span class="line">      <span class="comment"># 获取没有处理完的job</span></span><br><span class="line">      jobs = cleanup.map &#123;<span class="params">|p|</span> p.job &#125;.compact</span><br><span class="line"></span><br><span class="line">      logger.warn &#123; <span class="string">"Terminating <span class="subst">#&#123;cleanup.size&#125;</span> busy worker threads"</span> &#125;</span><br><span class="line">      logger.warn &#123; <span class="string">"Work still in progress <span class="subst">#&#123;jobs.inspect&#125;</span>"</span> &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment"># Re-enqueue unfinished jobs</span></span><br><span class="line">      <span class="comment"># <span class="doctag">NOTE:</span> You may notice that we may push a job back to redis before</span></span><br><span class="line">      <span class="comment"># the worker thread is terminated. This is ok because Sidekiq's</span></span><br><span class="line">      <span class="comment"># contract says that jobs are run AT LEAST once. Process termination</span></span><br><span class="line">      <span class="comment"># is delayed until we're certain the jobs are back in Redis because</span></span><br><span class="line">      <span class="comment"># it is worse to lose a job than to run it twice.</span></span><br><span class="line">      strategy = (@options[<span class="symbol">:fetch</span>] <span class="params">||</span> Sidekiq::BasicFetch)</span><br><span class="line"></span><br><span class="line">      <span class="comment"># 将未处理完的jobs推入队列的头部</span></span><br><span class="line">      strategy.bulk_requeue(jobs, @options)</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 强制kill掉线程</span></span><br><span class="line">    cleanup.each <span class="keyword">do</span> <span class="params">|processor|</span></span><br><span class="line">      processor.kill</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Processor</span></span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">kill</span><span class="params">(wait=<span class="literal">false</span>)</span></span></span><br><span class="line">    @done = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> !@thread</span><br><span class="line">    <span class="comment"># unlike the other actors, terminate does not wait</span></span><br><span class="line">    <span class="comment"># for the thread to finish because we don't know how</span></span><br><span class="line">    <span class="comment"># long the job will take to finish.  Instead we</span></span><br><span class="line">    <span class="comment"># provide a `kill` method to call after the shutdown</span></span><br><span class="line">    <span class="comment"># timeout passes.</span></span><br><span class="line">    @thread.raise <span class="symbol">:</span><span class="symbol">:Sidekiq</span><span class="symbol">:</span><span class="symbol">:Shutdown</span></span><br><span class="line">    @thread.value <span class="keyword">if</span> wait</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Sidekiq 还提供了 Scheduling Job 的功能, 即到时执行任务, 该部分使用了一个 SortedSet 的redis数据结构, 排序的因子为任务的执行时间. 在启动 Sidekiq 服务的时候, 会启动了一个线程轮询所有执行时间小于等于当前时间的队列数据, 将该部分的数据在pop至队列, 再由 Processor 处理.</p>
+</blockquote>
+<h2 id="Sidekiq-Middleware-未完待续"><a href="#Sidekiq-Middleware-未完待续" class="headerlink" title="Sidekiq Middleware(未完待续)"></a>Sidekiq Middleware(未完待续)</h2><blockquote>
+<p>Sidekiq提供了 ActiveRecord 的 server-side middleware,我们可以在sidekiq处理任务前后, 捕捉到任务的处理情况</p>
+</blockquote>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                    
+                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

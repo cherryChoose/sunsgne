@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>执念。 - 不想将开发作为挣钱的工具，而是作为快乐的起源</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,Sidekiq基本框架
+Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  sidekiq_options :retry ,"> 
+    <meta name="author" content="cherry"> 
+    <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-8691406134231910",
+        enable_page_level_ads: true
+      });
+    </script>
+
+</head>
+
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Sidekiq For Rails 5.2.1 (一)</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Sidekiq For Rails 5.2.1 (一)</h1>
+        <div class="stuff">
+            <span>八月 13, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <blockquote>
+<p>此篇主要包括： 后台任务角色、 简单实用sidekiq in rails、 使用sidekiq tips</p>
+</blockquote>
+<p>Sidekiq let us stop worrying about queues and focus on our app. Half a billion jobs later and it’s holding up great.</p>
+<p>项目中经常会有后台任务的处理，比如发送邮件时，因为要连接邮件服务器，往往需要5-10秒甚至更长时间，如果能先给用户一个成功的提示信息，然后在后台慢慢处理发送邮件的操作，显然会有更好的用户体验。</p>
+<p>为了实现类似的需求，Web项目中一般的实现方法是使用消息队列(Message Queue)，比如RabbitMQ</p>
+<p>消息队列说白了是一个最简单的先进先出队列，只能存储<code>字符串类型</code>的数据,不能执行任何程序，内容类似于：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">"class"</span>:<span class="string">"Ruby_JOB"</span>,<span class="string">"args"</span>:[&#123;<span class="string">"time"</span>:1411383677,<span class="string">"array"</span>:&#123;<span class="string">"test"</span>:<span class="string">"test"</span>&#125;&#125;],<span class="string">"id"</span>:<span class="string">"3277e009574ebe6716171a27b8d2eb9e"</span>&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Question"><a href="#Question" class="headerlink" title="Question"></a>Question</h2><ol>
+<li><p>如何将“任务” =&gt; “消息” ?</p>
+</li>
+<li><p>如何将“消息” =&gt; ”任务“ ?</p>
+</li>
+<li><p>谁去转化 ？</p>
+</li>
+</ol>
+<h3 id="后台任务的角色划分"><a href="#后台任务的角色划分" class="headerlink" title="后台任务的角色划分"></a>后台任务的角色划分</h3><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Job    （任务）</td>
+<td>一个Job就是一个需要在后台完成的任务</td>
+</tr>
+<tr>
+<td>Queue  （队列 ）</td>
+<td>队列的意义在于区分任务并且让任务排队, Sidekiq 中将每一类的任务使用一个 Queue 来区分开.</td>
+</tr>
+<tr>
+<td>Worker （执行者）</td>
+<td>负责从队列中取出Job并执行</td>
+</tr>
+</tbody>
+</table>
+<p>一个后台任务基本流程是这样的：</p>
+<ul>
+<li>将一个后台任务编写为一个独立的Class，这个Class就是一个Job。</li>
+<li>在需要使用后台程序的地方，系统将Job Class的名称以及所需参数放入队列。</li>
+<li>以命令行方式开启一个Worker，并通过参数指定Worker所需要处理的队列。</li>
+<li>Worker作为守护进程运行，并且定时检查队列。当队列中有Job时，Worker取出Job并运行，即实例化Job Class并执行Class中的方法。</li>
+</ul>
+<h2 id="Rails中配置Sidekiq"><a href="#Rails中配置Sidekiq" class="headerlink" title="Rails中配置Sidekiq"></a>Rails中配置Sidekiq</h2><h3 id="instaill-sidekiq"><a href="#instaill-sidekiq" class="headerlink" title="instaill sidekiq"></a>instaill sidekiq</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ gem install sidekiq</span><br></pre></td></tr></table></figure>
+<h3 id="Add-a-worker"><a href="#Add-a-worker" class="headerlink" title="Add a worker"></a>Add a worker</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rails g <span class="symbol">sidekiq:</span>worker Hard <span class="comment"># will create app/workers/hard_worker.rb</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HardWorker</span></span></span><br><span class="line">  <span class="keyword">include</span> Sidekiq::Worker</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">perform</span><span class="params">(name, count)</span></span></span><br><span class="line">    <span class="comment"># do something</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h3 id="Create-a-job"><a href="#Create-a-job" class="headerlink" title="Create a job"></a>Create a job</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HardWorker.perform_async(<span class="string">'bob'</span>, <span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="Start-sidekiq"><a href="#Start-sidekiq" class="headerlink" title="Start sidekiq"></a>Start sidekiq</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bundle exec sidekiq</span><br></pre></td></tr></table></figure>
+<h3 id="Sidekiq-Web-UI"><a href="#Sidekiq-Web-UI" class="headerlink" title="Sidekiq Web UI"></a>Sidekiq Web UI</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'sidekiq/web'</span></span><br><span class="line">mount Sidekiq::Web =&gt; <span class="string">'/sidekiq'</span></span><br></pre></td></tr></table></figure>
+<h2 id="Best-Practices"><a href="#Best-Practices" class="headerlink" title="Best Practices"></a>Best Practices</h2><h3 id="Make-your-job-parameters-small-and-simple"><a href="#Make-your-job-parameters-small-and-simple" class="headerlink" title="Make your job parameters small and simple"></a><strong>Make your job parameters small and simple</strong></h3><ul>
+<li><code>bed code</code></li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">quote = Quote.find(quote_id)</span><br><span class="line">SomeWorker.perform_async(quote)</span><br></pre></td></tr></table></figure>
+<p>Sidekiq将perform_async的参数保存到Redis。在这里做的是将整个Quote对象序列化存在Redis。在此期间发生变化quote发生了变化，该怎么办？所以不要将对象保存到Sidekiq，保存简单标识符，在perform方法中实际需要它们后查找对象。</p>
+<ul>
+<li><code>best code</code></li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SomeWorker.perform_async(quote_id)</span><br></pre></td></tr></table></figure>
+<p>传递给perform_async的参数必须由简单的JSON数据类型组成：string，integer，float，boolean，null，array和hash。Sidekiq客户端API使用<code>JSON.dump</code>将数据发送到Redis。Sidekiq服务器从Redis中提取JSON数据并使用<code>JSON.load</code>将数据转换回Ruby类型以传递给您的perform方法。</p>
+<h3 id="Make-your-job-idempotent-and-transactional"><a href="#Make-your-job-idempotent-and-transactional" class="headerlink" title="Make your job idempotent and transactional"></a><strong>Make your job idempotent and transactional</strong></h3><p>idempotent 意味着您的Job可以安全地<code>多次</code>执行。<br>例如，使用错误重试功能，您的Job可能处理了一半便抛出了错误，然后一遍又一遍地重新执行，直到成功完成。<code>请记住, Sidekiq 将至少执行一次你的工作, 而不是一次。</code></p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">perform</span><span class="params">(card_charge_id)</span></span></span><br><span class="line">  charge = CardCharge.find(card_charge_id)</span><br><span class="line">  charge.void_transaction</span><br><span class="line">  Emailer.charge_refunded(charge).deliver</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h3 id="Embrace-Concurrency"><a href="#Embrace-Concurrency" class="headerlink" title="Embrace Concurrency"></a><strong>Embrace Concurrency</strong></h3><p>Sidekiq is designed for parallel execution so design your jobs so you can run lots of them in parallel. It has basic features for tuning concurrency (e.g. targeting a sidekiq process at a queue with a defined number of threads) but your system architecture is much simpler if you don’t have such specialization.</p>
+<p>You can use a connection pool to limit the overall number of connections to a resource-limited server if your Sidekiq processes are overwhelming it with traffic.</p>
+<p>Sidekiq will not provide features which hack around a lack of concurrency in your jobs.</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                    
+                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
