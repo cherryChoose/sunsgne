@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>执念。 - 不想将开发作为挣钱的工具，而是作为快乐的起源</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,clear all the worker:
+
+Resque.workers.each {|w| w.unregister_worker}
+
+"> 
+    <meta name="author" content="cherry"> 
+    <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-8691406134231910",
+        enable_page_level_ads: true
+      });
+    </script>
+
+</head>
+
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">数据库连接池</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">数据库连接池</h1>
+        <div class="stuff">
+            <span>八月 21, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <h2 id="数据库连接池"><a href="#数据库连接池" class="headerlink" title="数据库连接池"></a>数据库连接池</h2><blockquote>
+<p>数据库连接池负责分配、管理和释放数据库连接，它允许应用程序重复使用一个现有的数据库连接，而不是再重新建立一个；释放空闲时间超过最大空闲时间的数据库连接来避免因为没有释放数据库连接而引起的数据库连接遗漏。这项技术能明显提高对数据库操作的性能。</p>
+</blockquote>
+<h2 id="影响因素"><a href="#影响因素" class="headerlink" title="影响因素"></a>影响因素</h2><p>数据库连接池在初始化时将创建一定数量的数据库连接放在连接池中，这些数据库连接的数量是由最小数据库连接数制约。无论这些数据库连接是否被使用，链接池都将保证至少有这些连结数，数据库连接池最大的数据库连接数量限定了这个连接池能占有的最大数量，当应用程序向连接池请求的链接数量超过最大链接数量，这些请求将被加入到等待队列中</p>
+<h3 id="最小链接数"><a href="#最小链接数" class="headerlink" title="最小链接数"></a>最小链接数</h3><p>是连接池一直保持的数据库连接，所以如果应用程序对数据库链接的使用量不大，将会有大量的    数据库链接资源被浪费。</p>
+<h3 id="最大链接数"><a href="#最大链接数" class="headerlink" title="最大链接数"></a>最大链接数</h3><p>是连接池能申请的最大连接数，如果数据库连接请求超过此数，后面的数据库连接请求将被加入到等待队列中，这会影响之后的数据库操作</p>
+<h3 id="最小连接数与最大连接数差距"><a href="#最小连接数与最大连接数差距" class="headerlink" title="最小连接数与最大连接数差距"></a>最小连接数与最大连接数差距</h3><p>最小连接数与最大连接数相差太大，那么最先的连接请求将会获利，之后超过最小连接数量的连接请求等价于建立一个新的数据库连接。不过，这些大于最小连接数的数据库连接在使用完不会马上被释放，它将被放到连接池中等待重复使用或是空闲超时后被释放。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>连接池基本的思想是在系统初始化的时候，将数据库连接作为对象存储在内存中，当用户需要访问数据库时，并非建立一个新的连接，而是从连接池中取出一个已建立的空闲连接对象。使用完毕后，用户也并非将连接关闭，而是将连接放回连接池中，以供下一个请求访问使用。而连接的建立、断开都由连接池自身来管理。同时，还可以通过设置连接池的参数来控制连接池中的初始连接数、连接的上下限数以及每个连接的最大使用次数、最大空闲时间等等。也可以通过其自身的管理机制来监视数据库连接的数量、使用情况等。 [1] </p>
+<h3 id="连接数据库过程"><a href="#连接数据库过程" class="headerlink" title="连接数据库过程"></a>连接数据库过程</h3><p><img src="/img/eg2.jpg" alt="连接池"></p>
+<h2 id="题外话："><a href="#题外话：" class="headerlink" title="题外话："></a>题外话：</h2><h3 id="aa并发不等于并行"><a href="#aa并发不等于并行" class="headerlink" title="åå并发不等于并行"></a>åå并发不等于并行</h3><p>几乎所有谈到并发和并行的文章都会提到一点： 并发并不等于并行。 那么如何理解这句话呢， 这里以餐馆下订单为例子进行说明：</p>
+<h3 id="并发："><a href="#并发：" class="headerlink" title="并发："></a>并发：</h3><p>同时有2桌客人点了菜，厨师同时接收到了两个菜单</p>
+<ul>
+<li><p>顺序执行： 如果只有一个厨师， 那么他只能一个菜单， 一个菜单的去完成</p>
+</li>
+<li><p>并行执行： 如果有两个厨师， 那么就可以并行， 两个人一起做菜</p>
+</li>
+</ul>
+<p>将这个例子扩展到我们的web开发中， 就可以这样理解：</p>
+<ul>
+<li><p>并发：<code>同时</code>有两个客户端对服务器发起了请求</p>
+</li>
+<li><p>顺序执行：服务器只有一个进程（线程）处理请求，完成了第一个请求才能完成第二个请求， 所以第二个请求就需要等待。</p>
+</li>
+<li><p>并行执行：服务器有两个进程（线程）处理请求， 两个请求都能得到响应， 而不存在先后的问题。</p>
+</li>
+</ul>
+<h2 id="线程的处理"><a href="#线程的处理" class="headerlink" title="线程的处理"></a>线程的处理</h2><p>ruby中描述一个并发的行为<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">threads = <span class="number">3</span>.times.map <span class="keyword">do</span> </span><br><span class="line">  Thread.new <span class="keyword">do</span></span><br><span class="line">    sleep <span class="number">3</span> </span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">puts <span class="string">"不用等3秒就可以看到我"</span></span><br><span class="line">threads.map(&amp;<span class="symbol">:join</span>)</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">time = Time.now</span><br><span class="line">threads = <span class="number">3</span>.times.map <span class="keyword">do</span> </span><br><span class="line">  Thread.new <span class="keyword">do</span></span><br><span class="line">    sleep <span class="number">10</span></span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">threads.map(&amp;<span class="symbol">:join</span>)</span><br><span class="line">puts <span class="string">"现在需要等10秒才可以看到我"</span></span><br><span class="line">p Time.now - time</span><br></pre></td></tr></table></figure>
+<p>当我们执行join的时候， 只有等所有的只有等到所有线程的任务都执行完成， 才会最后输出。 所以我们需要等待10秒才能看到输出的时间差。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                    
+                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

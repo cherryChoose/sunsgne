@@ -38,7 +38,7 @@ Resque.workers.each {|w| w.unregister_worker}
     <div class="bar" style="width: 0;"></div>
     <a class="icon-home image-icon" href="javascript:;"></a>
     <div title="播放/暂停" class="icon-play"></div>
-    <h3 class="subtitle">elasticsearch-分片</h3>
+    <h3 class="subtitle">Elasticsearch-集群健康</h3>
     <div class="social">
         <!--<div class="like-icon">-->
             <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
@@ -55,19 +55,47 @@ Resque.workers.each {|w| w.unregister_worker}
     <div class="section">
         <div class="article">
     <div class='main'>
-        <h1 class="title">elasticsearch-分片</h1>
+        <h1 class="title">Elasticsearch-集群健康</h1>
         <div class="stuff">
-            <span>七月 28, 2018</span>
+            <span>八月 23, 2018</span>
             
 
         </div>
         <div class="content markdown">
-            <p> 为了将数据存储在elasticsearch上，我们需要索引（index） - 一个存储关联数据的地方。实际上，索引只是用来指向一个或者过个分片的命名空间。一个分片是一个最小级别的<strong>工作单元</strong>，它只是保存了索引中所有数据的一部分，文档存储在分片中，并且被索引。</p>
-<p>实际上应用程序不会直接与分片通信，而是索引。分片是集群中分发数据的关键。分片可以是主分片或者是复制分片，索引中每个文档属于一个单独的主分片，所以主分片的数量决定了索引中能存储多少数据。</p>
+            <h2 id="数据"><a href="#数据" class="headerlink" title="数据"></a>数据</h2><h3 id="什么是文档？"><a href="#什么是文档？" class="headerlink" title="什么是文档？"></a>什么是文档？</h3><p> 程序中大部分的实体或对象能够转化为json对象</p>
+<p><strong>键(key)</strong>是<strong>字段(field)</strong>或<strong>属性(property)</strong>的名字，值(value)可以是字符串、数字、布尔类型、另一个对象、值数组或者其他特殊类型<br><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>:         <span class="string">"John Smith"</span>,</span><br><span class="line">    <span class="attr">"age"</span>:          <span class="number">42</span>,</span><br><span class="line">    <span class="attr">"confirmed"</span>:    <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">"join_date"</span>:    <span class="string">"2014-06-01"</span>,</span><br><span class="line">    <span class="attr">"home"</span>: &#123;</span><br><span class="line">        <span class="attr">"lat"</span>:      <span class="number">51.5</span>,</span><br><span class="line">        <span class="attr">"lon"</span>:      <span class="number">0.1</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"accounts"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"type"</span>: <span class="string">"facebook"</span>,</span><br><span class="line">            <span class="attr">"id"</span>:   <span class="string">"johnsmith"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"type"</span>: <span class="string">"twitter"</span>,</span><br><span class="line">            <span class="attr">"id"</span>:   <span class="string">"johnsmith"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>通常对象和文档是对等的</p>
+<h3 id="文档元数据"><a href="#文档元数据" class="headerlink" title="文档元数据"></a>文档元数据</h3><p>一个文档不只有元数据，还包含其他原数据节点</p>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_index</td>
+<td>文档存储的地方</td>
+</tr>
+<tr>
+<td>_type</td>
+<td>文档所有的对象类型</td>
+</tr>
+<tr>
+<td>_id</td>
+<td>文档的唯一标识</td>
+</tr>
+</tbody>
+</table>
+<h4 id="index"><a href="#index" class="headerlink" title="_index"></a>_index</h4><p>索引类似于关系型数据库中的’数据库‘,文档通过index被索引和存储，文档通过_index、_type、_id唯一确定。</p>
 <blockquote>
-<p>理论上主分片能存储的数据大小是没有限制的。<br>而限制取决于你实际的使用情况。分片的最大容量完全取决于你的使用状况：硬件存储的大小、文档的大小和复杂度、如何索引和查询你的文档，以及你期望的响应时间。</p>
+<p>事实上，我们的数据被存储和索引在分片(shards)中，索引只是一个把一个或多个分片分组在一起的逻辑空间。然而，这只是一些内部细节——我们的程序完全不用关心分片。对于我们的程序而言，文档存储在索引(index)中。剩下的细节由Elasticsearch关心既可。</p>
 </blockquote>
-<p>复制分片只是主分片的一个副本，它可以防止硬件故障导致的数据丢失，同时可以提供读请求，当索引创建完成的时候，主分片的数量就固定了，但是复制分片的数量可以随时调整。</p>
+<h4 id="type"><a href="#type" class="headerlink" title="_type"></a>_type</h4><p>在关系型数据库中，我们经常将相同类的对象存储在一个表里，因为它们有着相同的结构。同理，在Elasticsearch中，我们使用相同类型(type)的文档表示相同的“事物”，因为他们的数据结构也是相同的。</p>
+<p>每个类型(type)都有自己的映射(mapping)或者结构定义，就像传统数据库表中的列一样。所有类型下的文档被存储在同一个索引下，但是类型的映射(mapping)</p>
+<p>_type的名字可以是大写或小写，不能包含下划线或逗号。我们将使用blog做为类型名</p>
+<h4 id="id"><a href="#id" class="headerlink" title="_id"></a>_id</h4><p>id仅仅是一个字符串，它与_index和_type组合时，就可以在Elasticsearch中唯一标识一个文档。当创建一个文档，你可以自定义_id，也可以让Elasticsearch帮你自动生成。</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">

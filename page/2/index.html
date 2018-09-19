@@ -11,8 +11,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="Fechin,"> 
-    <meta name="description" content="时间匆匆，望你我未完待续。。。,Sidekiq基本框架
-Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  sidekiq_options :retry ,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,clear all the worker:
+
+Resque.workers.each {|w| w.unregister_worker}
+
+"> 
     <meta name="author" content="cherry"> 
     <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.png"> 
@@ -59,7 +62,7 @@ Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  sidekiq_options 
 <div id="screen">
     <div id="mark">
         <div class="layer" data-depth="0.4">
-            <img src="/img/i.jpeg" id="cover" crossorigin="anonymous" width="1920" height="1080">
+            <img src="/img/welcome-cover.jpg" id="cover" crossorigin="anonymous" width="1920" height="1080">
         </div>
     </div>
     <div id="vibrant">
@@ -76,10 +79,11 @@ Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  sidekiq_options 
     </div>
     
     <div id="post0">
-        <p>八月 13, 2018</p>
-        <h2><a href="/2018/08/13/Sidekiq(三)/" title="Sidekiq For Rails 5.2.1 (三)" class="posttitle">Sidekiq For Rails 5.2.1 (三)</a></h2>
-        <p class="summary">Sidekiq基本框架
-Sidekiq Client1234567class HardWorker  includ...</p>
+        <p>九月 06, 2018</p>
+        <h2><a href="/2018/09/06/Rescue/" title="clear all the worker" class="posttitle">clear all the worker</a></h2>
+        <p class="summary">clear all the worker:
+
+Resque.workers.each {|w| w.unregis...</p>
     </div>
     
 </div>
@@ -87,19 +91,172 @@ Sidekiq Client1234567class HardWorker  includ...</p>
     <div id="primary">
         
 <div class="post">
-    <a href="/2018/07/27/elasticsearch-认识/" title="Elasticsearch(一)">
-        <img src="/img/f.jpg" class="cover" width="680" height="440">
+    <a href="/2018/08/13/Sidekiq(三)/" title="Sidekiq For Rails 5.2.1 (三)">
+        <img src="/img/i.jpeg" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>八月 13, 2018</p>
+        <h3><a href="/2018/08/13/Sidekiq(三)/" title="Sidekiq For Rails 5.2.1 (三)" class="posttitle">Sidekiq For Rails 5.2.1 (三)</a></h3>
+        <p>Sidekiq基本框架
+Sidekiq Client1234567class HardWorker  include Sidekiq::Worker  s...</p>
+    </div>
+</div>
+
+
+<div class="post">
+    <a href="/2018/08/13/Sidekiq(二)/" title="Sidekiq For Rails 5.2.1 (二)">
+        <img src="/img/g.jpeg" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>八月 13, 2018</p>
+        <h3><a href="/2018/08/13/Sidekiq(二)/" title="Sidekiq For Rails 5.2.1 (二)" class="posttitle">Sidekiq For Rails 5.2.1 (二)</a></h3>
+        <p>
+此篇 主要是redis的配置信息
+
+Using RedisSidekiq 使用 Redis 存储其所有Job和操作数据。默认情况下, Sidekiq 尝...</p>
+    </div>
+</div>
+
+
+<div class="post">
+    <a href="/2018/08/13/sidekiq(一)/" title="Sidekiq For Rails 5.2.1 (一)">
+        <img src="/img/cover.jpg" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>八月 13, 2018</p>
+        <h3><a href="/2018/08/13/sidekiq(一)/" title="Sidekiq For Rails 5.2.1 (一)" class="posttitle">Sidekiq For Rails 5.2.1 (一)</a></h3>
+        <p>
+此篇主要包括： 后台任务角色、 简单实用sidekiq in rails、 使用sidekiq tips
+
+Sidekiq let us stop wo...</p>
+    </div>
+</div>
+
+
+<div class="post">
+    <a href="/2018/07/30/elasticsearch-文档/" title="elasticsearch-文档详细">
+        <img src="/img/d.jpg" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>七月 30, 2018</p>
+        <h3><a href="/2018/07/30/elasticsearch-文档/" title="elasticsearch-文档详细" class="posttitle">elasticsearch-文档详细</a></h3>
+        <p>什么是文档？
+程序中大多的实体或对象能够被序列化为包含键值对的JSON对象，键(key)是字段(field)或属性(property)的名字，值(valu...</p>
+    </div>
+</div>
+
+
+<div class="post">
+    <a href="/2018/07/28/elasticsearch-分片/" title="elasticsearch-分片">
+        <img src="/img/b.jpg" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>七月 28, 2018</p>
+        <h3><a href="/2018/07/28/elasticsearch-分片/" title="elasticsearch-分片" class="posttitle">elasticsearch-分片</a></h3>
+        <p> 为了将数据存储在elasticsearch上，我们需要索引（index） - 一个存储关联数据的地方。实际上，索引只是用来指向一个或者过个分片的命名空间...</p>
+    </div>
+</div>
+
+
+<div class="post">
+    <a href="/2018/07/28/elasticsearch-集群健康/" title="Elasticsearch-集群健康">
+        <img src="/img/h.png" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>七月 28, 2018</p>
+        <h3><a href="/2018/07/28/elasticsearch-集群健康/" title="Elasticsearch-集群健康" class="posttitle">Elasticsearch-集群健康</a></h3>
+        <p>在集群中可以监控统计很多信息，但是最终要的是集群健康，集群健康有3个状态：（红绿灯状态）
+
+
+
+status
+意义
+
+
+
+
+green
+所有主要分片和复制...</p>
+    </div>
+</div>
+
+
+<div class="post">
+    <a href="/2018/07/28/Elasticsearch-分布式特点/" title="Elasticsearch-分布式特点">
+        <img src="/img/a.jpg" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>七月 28, 2018</p>
+        <h3><a href="/2018/07/28/Elasticsearch-分布式特点/" title="Elasticsearch-分布式特点" class="posttitle">Elasticsearch-分布式特点</a></h3>
+        <p>
+Elasticsearch致力于隐藏分布式系统的复杂性。以下这些操作都是在底层自动完成的：
+
+
+将你的文档分区到不同的容器或者分片(shards)中，它...</p>
+    </div>
+</div>
+
+
+<div class="post">
+    <a href="/2018/07/28/elasticsearch-聚合/" title="TODO (聚合还没看懂) 聚合">
+        <img src="/img/j.jpeg" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>七月 28, 2018</p>
+        <h3><a href="/2018/07/28/elasticsearch-聚合/" title="TODO (聚合还没看懂) 聚合" class="posttitle">TODO (聚合还没看懂) 聚合</a></h3>
+        <p>TODO (聚合还没看懂) 聚合
+它允许你在数据上生成复杂的分析统计。它很像SQL中的GROUP BY但是功能更强大。
+
+</p>
+    </div>
+</div>
+
+
+<div class="post">
+    <a href="/2018/07/27/elasticsearch-搜索/" title="Elasticsearch-检索文档">
+        <img src="/img/c.jpg" class="cover" width="680" height="440">
     </a>
     <div class="else">
         <p>七月 27, 2018</p>
-        <h3><a href="/2018/07/27/elasticsearch-认识/" title="Elasticsearch(一)" class="posttitle">Elasticsearch(一)</a></h3>
-        <p>Elasticsearch前言
-是一个分布式、可扩展、实时的搜索与数据分析引擎,Elasticsearch 不仅仅只是全文搜索，我们还将介绍结构化搜索、数...</p>
+        <h3><a href="/2018/07/27/elasticsearch-搜索/" title="Elasticsearch-检索文档" class="posttitle">Elasticsearch-检索文档</a></h3>
+        <p># 
+查询字符串搜索
+请求搜索所有商品（响应内容的hits数组中包含了我们所有商品信息）
+
+http://localhost:9200/products/...</p>
+    </div>
+</div>
+
+
+<div class="post">
+    <a href="/2018/07/27/elasticsearch-索引、文档/" title="Elasticsearch-文档 & 索引">
+        <img src="/img/e.jpg" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>七月 27, 2018</p>
+        <h3><a href="/2018/07/27/elasticsearch-索引、文档/" title="Elasticsearch-文档 & 索引" class="posttitle">Elasticsearch-文档 & 索引</a></h3>
+        <p>基本概念在elasticsearch中，文档归属于类型，类型存储在索引中。
+
+
+
+名称
+elasticsearch
+数据库
+
+
+
+
+field
+字段
+列
+...</p>
     </div>
 </div>
 
 
     </div>
+    
+    <div id="pager"><a href="/page/3/" class="more">加载更多</a></div>
     
 </div>
 <div id="preview"></div>

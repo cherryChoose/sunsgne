@@ -33,75 +33,81 @@ Resque.workers.each {|w| w.unregister_worker}
 
 <body class="loading">
     <div id="loader"></div>
-    <div id="single">
-    <div id="top" style="display: block;">
-    <div class="bar" style="width: 0;"></div>
-    <a class="icon-home image-icon" href="javascript:;"></a>
-    <div title="播放/暂停" class="icon-play"></div>
-    <h3 class="subtitle">elasticsearch-分片</h3>
-    <div class="social">
-        <!--<div class="like-icon">-->
-            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
-        <!--</div>-->
-        <div>
-            <div class="share">
-                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
-            </div>
-            <div id="qr"></div>
+    <div class="nav">
+    <ul id="menu-menu" class="menu">
+        
+        <li class="pview menu-item menu-item-type-post_type menu-item-object-page">
+            <a href="/whoami/" title="Whoami" target="_blank" rel="noopener">Whoami</a>
+        </li>
+        
+        <li class="  menu-item menu-item-type-post_type menu-item-object-page">
+            <a href="https://github.com/Fechin" title="Github" target="_blank" rel="noopener">Github</a>
+        </li>
+        
+        <li class="  menu-item menu-item-type-post_type menu-item-object-page">
+            <a href="https://twitter.com/FechinLi" title="Twitter" target="_blank" rel="noopener">Twitter</a>
+        </li>
+        
+    </ul>
+    <p id="copyright">
+        &copy; 2018 cherry.
+        Powered by <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a>
+        Theme <a href="https://github.com/Fechin/hexo-theme-diaspora" title="Diaspora" target="_blank" rel="noopener">Diaspora</a>
+        by Fechin
+    </p>
+</div>
+
+<div id="container">
+    
+<div id="screen">
+    <div id="mark">
+        <div class="layer" data-depth="0.4">
+            <img src="/img/welcome-cover.jpg" id="cover" crossorigin="anonymous" width="1920" height="1080">
         </div>
     </div>
-    <div class="scrollbar"></div>
+    <div id="vibrant">
+        <svg viewBox="0 0 2880 1620" height="100%" preserveAspectRatio="xMaxYMax slice">
+            <polygon opacity="0.7" points="2000,1620 0,1620 0,0 600,0 "/>
+        </svg>
+        <div></div>
+    </div>
+    <div id="header">
+        <div>
+            <a class="image-logo" href="/"></a>
+            <div class="icon-menu switchmenu"></div>
+        </div>
+    </div>
+    
+    <div id="post0">
+        <p>九月 06, 2018</p>
+        <h2><a href="/2018/09/06/Rescue/" title="clear all the worker" class="posttitle">clear all the worker</a></h2>
+        <p class="summary">clear all the worker:
+
+Resque.workers.each {|w| w.unregis...</p>
+    </div>
+    
 </div>
-    <div class="section">
-        <div class="article">
-    <div class='main'>
-        <h1 class="title">elasticsearch-分片</h1>
-        <div class="stuff">
-            <span>七月 28, 2018</span>
-            
 
-        </div>
-        <div class="content markdown">
-            <p> 为了将数据存储在elasticsearch上，我们需要索引（index） - 一个存储关联数据的地方。实际上，索引只是用来指向一个或者过个分片的命名空间。一个分片是一个最小级别的<strong>工作单元</strong>，它只是保存了索引中所有数据的一部分，文档存储在分片中，并且被索引。</p>
-<p>实际上应用程序不会直接与分片通信，而是索引。分片是集群中分发数据的关键。分片可以是主分片或者是复制分片，索引中每个文档属于一个单独的主分片，所以主分片的数量决定了索引中能存储多少数据。</p>
-<blockquote>
-<p>理论上主分片能存储的数据大小是没有限制的。<br>而限制取决于你实际的使用情况。分片的最大容量完全取决于你的使用状况：硬件存储的大小、文档的大小和复杂度、如何索引和查询你的文档，以及你期望的响应时间。</p>
-</blockquote>
-<p>复制分片只是主分片的一个副本，它可以防止硬件故障导致的数据丢失，同时可以提供读请求，当索引创建完成的时候，主分片的数量就固定了，但是复制分片的数量可以随时调整。</p>
-
-            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
-            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
-                <source type="audio/mpeg" src="">
-            </audio>
-            
-                <ul id="audio-list" style="display:none">
-                    
-                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
-                    
-                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
-                    
-                </ul>
-            
-        </div>
+    <div id="primary">
         
-    <div id='gitalk-container' class="comment link"
-        data-ae='false'
-        data-ci=''
-        data-cs=''
-        data-r=''
-        data-o=''
-        data-a=''
-        data-d='false'
-    >查看评论</div>
+<div class="post">
+    <a href="/2018/07/27/elasticsearch-认识/" title="Elasticsearch(一)">
+        <img src="/img/f.jpg" class="cover" width="680" height="440">
+    </a>
+    <div class="else">
+        <p>七月 27, 2018</p>
+        <h3><a href="/2018/07/27/elasticsearch-认识/" title="Elasticsearch(一)" class="posttitle">Elasticsearch(一)</a></h3>
+        <p>Elasticsearch前言
+是一个分布式、可扩展、实时的搜索与数据分析引擎,Elasticsearch 不仅仅只是全文搜索，我们还将介绍结构化搜索、数...</p>
+    </div>
+</div>
 
 
     </div>
     
 </div>
+<div id="preview"></div>
 
-
-    </div>
-</div>
 </body>
 <script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
 <script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>

@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>执念。 - 不想将开发作为挣钱的工具，而是作为快乐的起源</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,clear all the worker:
+
+Resque.workers.each {|w| w.unregister_worker}
+
+"> 
+    <meta name="author" content="cherry"> 
+    <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-8691406134231910",
+        enable_page_level_ads: true
+      });
+    </script>
+
+</head>
+
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">postgres常用命令</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">postgres常用命令</h1>
+        <div class="stuff">
+            <span>九月 06, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p>###under shell###<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">启动服务： pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start <span class="params">||</span> brew services start postgresql</span><br><span class="line"></span><br><span class="line">停止服务： pg_ctl -D /usr/local/var/postgres stop -s -m fast <span class="params">||</span> brew services stop postgresql</span><br><span class="line"></span><br><span class="line">备份: pg_dump -h host -p port -d database -U user --format=c -v --file=xxx.dump</span><br><span class="line"></span><br><span class="line">还原: pg_restore -h host -p port -d database -U user xxx.dump</span><br><span class="line"></span><br><span class="line">创建用户: createuser -d -a -P postgres</span><br><span class="line"></span><br><span class="line">删除数据库：DROP DATABASE. 数据库名称（关键字必须大写）</span><br><span class="line"></span><br><span class="line">创建数据库: CREATE DATABASE 数据库名称（关键字大写）</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">登入远程<span class="symbol">psql:</span> psql -h localhost -U db_2ccm db_2ccm_production -W</span><br><span class="line"></span><br><span class="line">导出数据库: pg_dump -h <span class="number">39.106</span>.<span class="number">144.242</span> -p <span class="number">6432</span> -U db_2ccm db_2ccm_production -W &gt; db_2ccm_staging.sql   （staging数据库导出）</span><br><span class="line"></span><br><span class="line">导入数据库<span class="symbol">:</span></span><br><span class="line">O（-h  <span class="number">127.0</span>.<span class="number">0</span>.<span class="number">1</span>。 -d 导入的数据库。 -U role        -f 文件位置 ）</span><br><span class="line"></span><br><span class="line">psql -h localhost  -d cgc_test  -U <span class="number">2</span>ccmay -f ~<span class="regexp">/db_2ccm_staging.sql</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">查看psql启动的是那个端口： netstat -a | grep PGSQ</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">查看postgres链接数：</span></span><br><span class="line"><span class="regexp">postgres=# select count(1) from pg_stat_activity;</span></span><br><span class="line"><span class="regexp">查看最大链接数</span></span><br><span class="line"><span class="regexp">postgres=# show max_connections;</span></span><br><span class="line"><span class="regexp">查看为超级用户保留的连接数：</span></span><br><span class="line"><span class="regexp">postgres=# show superuser_reserved_connections ;</span></span><br></pre></td></tr></table></figure></p>
+<p>###under psql###</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">\l   查看数据库 list</span><br><span class="line">\du  查看role list</span><br><span class="line">\dn  查看schema list</span><br><span class="line">\dx  查看extension list</span><br><span class="line">\q   退出数据库</span><br><span class="line"></span><br><span class="line">删除数据库: DROP DATABASE db;</span><br><span class="line">role授权: grant rds_superuser to role;</span><br><span class="line">创建角色： CREATE ROLE role;</span><br><span class="line">删除SCHEMA和下面的<span class="symbol">tables:</span>  DROP SCHEMA public CASCADE;</span><br><span class="line">创建<span class="symbol">SCHEMA:</span> CREATE SCHEMA public;</span><br><span class="line">SCHEMA授权: GRANT ALL ON SCHEMA public TO role;</span><br><span class="line">SCHEMA撤销授权:  REVOKE ALL ON SCHEMA public from role;</span><br><span class="line">用户重命名: ALTER USER user RENAME TO user1</span><br><span class="line">用户授权:  ALTER USER user LOGIN</span><br><span class="line">用户更改密码: ALTER USER user WITH PASSWORD <span class="string">'1234'</span></span><br><span class="line">DATABASE更改<span class="symbol">OWNER:</span> ALTER DATABASE database OWNER TO user</span><br></pre></td></tr></table></figure>
+<p>###under rails console###</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ActiveRecord::Base.connection.execute(sql)</span><br><span class="line">ActiveRecord::Migration.drop_table(<span class="symbol">:tables</span>)</span><br><span class="line">ActiveRecord::Migration.remove_column(<span class="symbol">:tables</span>,  <span class="symbol">:column</span>)</span><br><span class="line">ActiveRecord::Migration.add_column(<span class="symbol">:tables</span>, <span class="symbol">:column</span>, <span class="symbol">:type</span>)</span><br><span class="line">ActiveRecord::Migration.change_column(<span class="symbol">:tables</span>, <span class="symbol">:column</span>, <span class="symbol">:type</span>)</span><br></pre></td></tr></table></figure>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                    
+                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>

@@ -38,7 +38,7 @@ Resque.workers.each {|w| w.unregister_worker}
     <div class="bar" style="width: 0;"></div>
     <a class="icon-home image-icon" href="javascript:;"></a>
     <div title="播放/暂停" class="icon-play"></div>
-    <h3 class="subtitle">elasticsearch-分片</h3>
+    <h3 class="subtitle">Linux查看物理CPU个数、核数、逻辑CPU个数</h3>
     <div class="social">
         <!--<div class="like-icon">-->
             <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
@@ -55,19 +55,15 @@ Resque.workers.each {|w| w.unregister_worker}
     <div class="section">
         <div class="article">
     <div class='main'>
-        <h1 class="title">elasticsearch-分片</h1>
+        <h1 class="title">Linux查看物理CPU个数、核数、逻辑CPU个数</h1>
         <div class="stuff">
-            <span>七月 28, 2018</span>
+            <span>九月 06, 2018</span>
             
 
         </div>
         <div class="content markdown">
-            <p> 为了将数据存储在elasticsearch上，我们需要索引（index） - 一个存储关联数据的地方。实际上，索引只是用来指向一个或者过个分片的命名空间。一个分片是一个最小级别的<strong>工作单元</strong>，它只是保存了索引中所有数据的一部分，文档存储在分片中，并且被索引。</p>
-<p>实际上应用程序不会直接与分片通信，而是索引。分片是集群中分发数据的关键。分片可以是主分片或者是复制分片，索引中每个文档属于一个单独的主分片，所以主分片的数量决定了索引中能存储多少数据。</p>
-<blockquote>
-<p>理论上主分片能存储的数据大小是没有限制的。<br>而限制取决于你实际的使用情况。分片的最大容量完全取决于你的使用状况：硬件存储的大小、文档的大小和复杂度、如何索引和查询你的文档，以及你期望的响应时间。</p>
-</blockquote>
-<p>复制分片只是主分片的一个副本，它可以防止硬件故障导致的数据丢失，同时可以提供读请求，当索引创建完成的时候，主分片的数量就固定了，但是复制分片的数量可以随时调整。</p>
+            <p><strong><em>Linux查看物理CPU个数、核数、逻辑CPU个数</em></strong><br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 总核数 = 物理CPU个数 X 每颗物理CPU的核数</span></span><br><span class="line"><span class="comment"># 总逻辑CPU数 = 物理CPU个数 X 每颗物理CPU的核数 X 超线程数</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看物理CPU个数</span></span><br><span class="line">cat /proc/cpuinfo<span class="params">| grep "physical id"|</span> sort<span class="params">| uniq|</span> wc -l</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看每个物理CPU中core的个数(即核数)</span></span><br><span class="line">cat /proc/cpuinfo<span class="params">| grep "cpu cores"|</span> uniq</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看逻辑CPU的个数</span></span><br><span class="line">cat /proc/cpuinfo<span class="params">| grep "processor"|</span> wc -l</span><br></pre></td></tr></table></figure></p>
+<p><strong><em>查询内存信息</em></strong><br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/meminfo</span><br></pre></td></tr></table></figure></p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">

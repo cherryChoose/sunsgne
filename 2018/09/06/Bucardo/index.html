@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>执念。 - 不想将开发作为挣钱的工具，而是作为快乐的起源</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Fechin,"> 
+    <meta name="description" content="时间匆匆，望你我未完待续。。。,clear all the worker:
+
+Resque.workers.each {|w| w.unregister_worker}
+
+"> 
+    <meta name="author" content="cherry"> 
+    <link rel="alternative" href="atom.xml" title="执念。" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <link rel="stylesheet" href="/css/diaspora.css">
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+      (adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: "ca-pub-8691406134231910",
+        enable_page_level_ads: true
+      });
+    </script>
+
+</head>
+
+<body class="loading">
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="icon-home image-icon" href="javascript:;"></a>
+    <div title="播放/暂停" class="icon-play"></div>
+    <h3 class="subtitle">Bucardo 数据同步</h3>
+    <div class="social">
+        <!--<div class="like-icon">-->
+            <!--<a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+        <!--</div>-->
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">Bucardo 数据同步</h1>
+        <div class="stuff">
+            <span>九月 06, 2018</span>
+            
+
+        </div>
+        <div class="content markdown">
+            <p><strong><em>Bucardo install</em></strong></p>
+<ul>
+<li><p>sudo apt-get update</p>
+</li>
+<li><p>sudo apt-get install aptitude</p>
+</li>
+<li><p>sudo aptitude install libdbix-safe-perl libboolean-perl libdbd-pg-perl libtest-simple-perl libdbi-perl libdbd-pg-perl libboolean-perl wget build-essential libreadline-dev libz-dev autoconf bison libtool libgeos-c1 libproj-dev libgdal-dev libxml2-dev libxml2-utils libjson0-dev xsltproc docbook-xsl docbook-mathml libossp-uuid-dev libperl-dev</p>
+</li>
+<li><p>sudo mkdir /usr/src/bucardo</p>
+</li>
+<li><p>sudo chown -R bucardo:bucardo /usr/src/bucardo</p>
+</li>
+<li><p>cd /usr/src/bucardo</p>
+</li>
+<li><p>wget <a href="http://bucardo.org/downloads/Bucardo-5.4.1.tar.gz" target="_blank" rel="noopener">http://bucardo.org/downloads/Bucardo-5.4.1.tar.gz</a></p>
+</li>
+<li><p>tar -xzvf Bucardo-5.4.1.tar.gz</p>
+</li>
+<li><p>cd Bucardo-5.4.1/</p>
+</li>
+<li><p>perl Makefile.PL</p>
+</li>
+<li><p>make</p>
+</li>
+<li><p>make test</p>
+</li>
+<li><p>sudo make install</p>
+</li>
+<li><p>sudo nano /etc/apt/sources.list.d/pgdg.list  加上 deb <a href="http://apt.postgresql.org/pub/repos/apt/" target="_blank" rel="noopener">http://apt.postgresql.org/pub/repos/apt/</a> xenial-pgdg main</p>
+</li>
+<li><p>wget –quiet -O - <a href="https://www.postgresql.org/media/keys/ACCC4CF8.asc" target="_blank" rel="noopener">https://www.postgresql.org/media/keys/ACCC4CF8.asc</a> | sudo apt-key add -<br>sudo apt-get update</p>
+</li>
+<li><p>sudo apt-get install postgresql-client-9.4 postgresql-9.4 postgresql-contrib-9.4 libpq-dev postgresql-server-dev-9.4</p>
+</li>
+</ul>
+<ul>
+<li>sudo nano /etc/postgresql/9.4/main/pg_hba.conf</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># "local" is for Unix domain socket connections only</span></span><br><span class="line">local   all             bucardo                                 trust</span><br><span class="line">local   all             all                                     md5</span><br><span class="line"><span class="comment"># IPv4 local connections:</span></span><br><span class="line">host    all             all             <span class="number">127.0</span>.<span class="number">0</span>.<span class="number">1</span>/<span class="number">32</span>            trust</span><br><span class="line">host    all             all             <span class="number">127.0</span>.<span class="number">0</span>.<span class="number">1</span>/<span class="number">32</span>            md5</span><br><span class="line"><span class="comment"># IPv6 local connections:</span></span><br><span class="line">host    all             all             <span class="symbol">:</span><span class="symbol">:</span><span class="number">1</span>/<span class="number">128</span>                 trust</span><br><span class="line">host    all             all             <span class="symbol">:</span><span class="symbol">:</span><span class="number">1</span>/<span class="number">128</span>                 md5</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>sudo service postgresql restart</p>
+</li>
+<li><p>sudo mkdir -p /var/run/bucardo</p>
+</li>
+<li><p>sudo mkdir -p /var/log/bucardo</p>
+</li>
+<li><p>sudo su - postgres</p>
+</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">    psql</span><br><span class="line">    CREATE EXTENSION plperl;</span><br><span class="line"></span><br><span class="line">    bucardo install</span><br><span class="line"></span><br><span class="line">    <span class="number">1</span></span><br><span class="line">    <span class="number">127.0</span>.<span class="number">0</span>.<span class="number">1</span></span><br><span class="line">    P</span><br><span class="line"></span><br><span class="line">    添加白名单<span class="symbol">:</span></span><br><span class="line"><span class="string">``</span><span class="string">`    </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">***Bucardo Setting***</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">***api.2ccmchina.com -&gt; 法兰克福***</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">- ADD DATABASE</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span>ruby</span><br><span class="line">    bucardo add database db_aliyun_huadong1 dbname=db_2ccm_production host=rm-<span class="number">2</span>zet4t881923b9o60o.pg.rds.aliyuncs.com user=db_2ccm pass=xxxxxxxx port=<span class="number">3432</span></span><br><span class="line">    bucardo add database db_flkf_rds dbname=db_2ccm_production host=rm-gw89rz0l64186x85to.pgsql.germany.rds.aliyuncs.com user=db_2ccm pass=xxxxxxx port=<span class="number">3432</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>ADD TABLE</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bucardo add all tables db=db_aliyun_huadong1</span><br><span class="line">bucardo add all tables db=db_flkf_rds</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ADD HERD/RELGROUP</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bucardo add all tables db=db_aliyun_huadong1 --herd=db_aliyun_huadong1_db_flkf_rds</span><br><span class="line">bucardo add all tables db=db_flkf_rds --herd=db_flkf_rds_db_aliyun_huadong1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ADD SYNC</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bucardo add sync asia_to_eu relgroup=db_aliyun_huadong1_db_flkf_rds dbs=db_aliyun_huadong1,db_flkf_rds</span><br><span class="line">bucardo add sync eu_to_asia relgroup=db_flkf_rds_db_aliyun_huadong1 dbs=db_flkf_rds,db_aliyun_huadong1</span><br></pre></td></tr></table></figure>
+<p><strong><em>api.2ccm.net -&gt; 法兰克福</em></strong></p>
+<ul>
+<li>ADD DATABASE</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bucardo add database db_aliyun_hk1 dbname=db_2ccm_production host=<span class="number">47.91</span>.<span class="number">167.213</span> user=db_2ccm pass=xxxxxxx port=<span class="number">5431</span></span><br><span class="line"></span><br><span class="line">bucardo add database db_flkf_rds dbname=db_2ccm_production host=rm-gw89rz0l64186x85to.pgsql.germany.rds.aliyuncs.com user=db_2ccm pass=xxxxxxxx port=<span class="number">3432</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>ADD TABLE</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bucardo add all tables db=db_aliyun_hk1</span><br><span class="line">bucardo add all tables db=db_flkf_rds</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ADD HERD/RELGROUP</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bucardo add all tables db=db_aliyun_hk1     --herd=db_aliyun_hk1_db_flkf_rds</span><br><span class="line">bucardo add all tables db=db_flkf_rds --herd=db_flkf_rds_db_aliyun_hk1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>ADD SYNC</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bucardo add sync api_2ccm_net_to_flkf relgroup=db_aliyun_hk1_db_flkf_rds dbs=db_aliyun_hk1,db_flkf_rds</span><br><span class="line">bucardo add sync flkf_to_api_2ccm_net relgroup=db_flkf_rds_db_aliyun_hk1 dbs=db_flkf_rds,db_aliyun_hk1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>START BUCARDO SERVICE</li>
+</ul>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]<span class="comment"># sudo bucardo start</span></span><br><span class="line">[root@localhost ~]<span class="comment"># sudo bucardo status</span></span><br></pre></td></tr></table></figure>
+<p>##other cmd:##</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">    bucardo status all</span><br><span class="line">    sudo bucardo stop</span><br><span class="line">    sudo bucardo start</span><br><span class="line">    bucardo deactivate eu_to_asia</span><br><span class="line">    bucardo activate eu_to_asia</span><br><span class="line"></span><br><span class="line">    bucardo delete sync eu_to_asia</span><br><span class="line">    bucardo delete herd db_aliyun_huadong1_db_flkf_rds</span><br><span class="line">    bucardo remove all tables db=db_aliyun_hk1</span><br><span class="line">    bucardo remove table public.packages_partner_order_items db=db_aliyun_huadong1</span><br><span class="line">bucardo delete database db_aliyun_hk1</span><br><span class="line"></span><br><span class="line">    bucardo list tables</span><br><span class="line">    bucardo list database</span><br><span class="line">    bucardo list sync</span><br><span class="line">    bucardo list herd/relgroup</span><br></pre></td></tr></table></figure>
+<p>##warnning:##<br>  <code>database 别名 不能太长</code></p>
+<p>###参考文章:####</p>
+<p><a href="https://icicimov.github.io/blog/database/PostgreSQL-DB-replication-with-Bucardo/" target="_blank" rel="noopener"><code>https://icicimov.github.io/blog/database/PostgreSQL-DB-replication-with-Bucardo/</code></a>`</p>
+<p><a href="https://latcoding.com/notes/replication_1server" target="_blank" rel="noopener"><code>https://latcoding.com/notes/replication_1server</code></a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                        <li title='0' data-url='http://link.hhtjim.com/163/5146554.mp3'></li>
+                    
+                        <li title='1' data-url='http://link.hhtjim.com/qq/001faIUs4M2zna.mp3'></li>
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+        data-ae='false'
+        data-ci=''
+        data-cs=''
+        data-r=''
+        data-o=''
+        data-a=''
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/diaspora.js"></script>
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</html>
